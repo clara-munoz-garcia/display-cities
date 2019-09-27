@@ -85,7 +85,7 @@ public class WordsServiceImpl implements WordsService {
 	private HashSet<String> combineAndSwap(String word) {
 		// Used to not allow repetitions in permutations
 		HashSet<String> wordsSet = new HashSet<>();
-		List<String> combinations = new ArrayList<>();
+		HashSet<String> combinations = new HashSet<>();
 		StringBuilder result = new StringBuilder();
 		// Obtains the combinations of the word
 		combine(0, word, combinations, result);
@@ -102,21 +102,21 @@ public class WordsServiceImpl implements WordsService {
 	 * 
 	 * @param start      the start index
 	 * @param word       the received word
-	 * @param resultList the result list
+	 * @param combinations the result list
 	 * @param wordResult the combination result
 	 */
-	private void combine(int start, String word, List<String> resultList, StringBuilder wordResult) {
+	private void combine(int start, String word, HashSet<String> combinations, StringBuilder wordResult) {
 		// Walks all the letters of the word combining and adding one more char until
 		// max length
 		for (int i = start; i < word.length(); ++i) {
 			wordResult.append(word.charAt(i));
 			// If the length is what we want, then we get it
 			if (wordResult.length() == LENGTH_5 || wordResult.length() == LENGTH_6 || wordResult.length() == LENGTH_7) {
-				resultList.add(wordResult.toString());
+				combinations.add(wordResult.toString().toLowerCase());
 			}
 			// We continue combining
 			if (i < word.length()) {
-				combine(i + 1, word, resultList, wordResult);
+				combine(i + 1, word, combinations, wordResult);
 			}
 			wordResult.setLength(wordResult.length() - 1);
 		}
@@ -160,11 +160,11 @@ public class WordsServiceImpl implements WordsService {
 			Entry<String, HashSet<String>> mentry = iterator.next();
 			String wordName = mentry.getKey();
 			List<String> permList = ((HashSet<String>) mentry.getValue()).stream().collect(Collectors.toList());
-			List<String> rightWords = new ArrayList<>();
+			Set<String> rightWords = new HashSet<>();
 			for (String permutation : permList) {
 				// Compares the permutation with the dictionary
 				if (dictionary.stream().anyMatch(str -> str.trim().equalsIgnoreCase(permutation))) {
-					rightWords.add(permutation);
+					rightWords.add(permutation.toLowerCase());
 				}
 			}
 			LOG.info("City: " + wordName + " - Words: " + rightWords.toString());
